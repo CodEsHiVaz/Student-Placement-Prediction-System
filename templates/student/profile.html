@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+
+<h3 class="mb-4">My Profile</h3>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form method="post" class="needs-validation" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="mb-3">
+        <label class="form-label">Student ID</label>
+        <input type="text" name="student_id" class="form-control"
+               value="{{ student.student_id if student else '' }}" required>
+        <div class="form-text">A unique identifier for you (e.g. your roll number).</div>
+      </div>
+
+      {% include "student/_fields.html" %}
+
+      <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Save Profile</button>
+        <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

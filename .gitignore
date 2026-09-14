@@ -1,0 +1,28 @@
+# Environment / secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+venv/
+.venv/
+env/
+
+# Dataset (do not commit large data or expose it)
+# data/*.csv
+
+# Trained models / metadata (regenerate with ml/train_model.py)
+ml/models/*.pkl
+ml/models/*.json
+
+# EDA output
+ml/eda_output/
+
+# Logs
+logs/*.log
+
+# OS
+.DS_Store
+Thumbs.db

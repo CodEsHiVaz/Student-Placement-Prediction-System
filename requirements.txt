@@ -1,0 +1,33 @@
+# Student Placement Prediction System - Python dependencies
+#
+# Version constraints use ">=" (minimum versions) rather than exact pins so that
+# pip can install a prebuilt wheel for whatever Python you use:
+#   - Python 3.11 / 3.12  (recommended, very stable)
+#   - Python 3.13 / 3.14  (also works; pip picks the newer wheels automatically)
+#
+# Exact pinning to old versions can force a source build on newer Python (which
+# needs a C/C++ compiler), so we avoid that here.
+
+# Web framework
+Flask>=3.0
+Flask-SQLAlchemy>=3.1
+Flask-Login>=0.6
+Flask-WTF>=1.2
+
+# MySQL driver (pure-python, no compiler needed)
+PyMySQL>=1.1
+
+# Configuration
+python-dotenv>=1.0
+
+# Machine learning / data
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.5
+joblib>=1.3
+
+# Charts for the standalone EDA script (the web UI uses Chart.js, not this)
+matplotlib>=3.8
+
+# Testing
+pytest>=8.0

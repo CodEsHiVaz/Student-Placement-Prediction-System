@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Student {{ student.student_id }}{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="mb-0">Student {{ student.student_id }}</h3>
+  <div class="d-flex gap-2">
+    <form method="post" action="{{ url_for('admin.predict_student', student_pk=student.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn btn-primary btn-sm">
+        <i class="bi bi-graph-up-arrow"></i> Run Prediction
+      </button>
+    </form>
+    <a href="{{ url_for('admin.students') }}" class="btn btn-outline-secondary btn-sm">Back to list</a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header">Profile</div>
+      <ul class="list-group list-group-flush">
+        {% set rows = [
+          ('Age', student.age), ('Gender', student.gender),
+          ('Degree', student.degree), ('Branch', student.branch),
+          ('CGPA', student.cgpa), ('Internships', student.internships),
+          ('Projects', student.projects), ('Coding Skills', student.coding_skills),
+          ('Communication', student.communication_skills),
+          ('Aptitude Score', student.aptitude_test_score),
+          ('Soft Skills', student.soft_skills_rating),
+          ('Certifications', student.certifications), ('Backlogs', student.backlogs),
+        ] %}
+        {% for label, value in rows %}
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">{{ label }}</span><strong>{{ value }}</strong>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header">Prediction History</div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead class="table-light">
+            <tr><th>Date</th><th>Status</th><th>Prob.</th><th>Category</th></tr>
+          </thead>
+          <tbody>
+            {% for p in predictions %}
+            <tr>
+              <td class="small">{{ p.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td>{{ p.predicted_status }}</td>
+              <td>{{ p.probability_percentage }}%</td>
+              <td><span class="badge bg-{{ category_colors.get(p.category, 'secondary') }}">{{ p.category }}</span></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-3">No predictions.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

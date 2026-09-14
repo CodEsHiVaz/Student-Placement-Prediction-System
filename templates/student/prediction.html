@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Predict Placement{% endblock %}
+{% block content %}
+
+<h3 class="mb-4">Predict Placement</h3>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <p class="text-muted">
+          Values are pre-filled from your profile. You can adjust them to see how
+          different inputs change the prediction (this does not change your saved profile).
+        </p>
+        <form id="prediction-form" class="needs-validation" novalidate>
+          {% include "student/_fields.html" %}
+          <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Predict Placement</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div id="prediction-result">
+      <div class="card shadow-sm">
+        <div class="card-body text-center text-muted py-5">
+          Your prediction result will appear here.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

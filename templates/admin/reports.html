@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+
+<h3 class="mb-4">Reports</h3>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <p>
+      Download a CSV report containing each student's latest placement prediction.
+    </p>
+    <p class="text-muted">
+      Predictions stored so far: <strong>{{ total_predictions }}</strong>
+    </p>
+    {% if total_predictions > 0 %}
+      <a href="{{ url_for('admin.download_report') }}" class="btn btn-primary">
+        <i class="bi bi-download"></i> Download CSV Report
+      </a>
+    {% else %}
+      <div class="alert alert-info mb-0">
+        No predictions have been made yet, so there is nothing to report.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

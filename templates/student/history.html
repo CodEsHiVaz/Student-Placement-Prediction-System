@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Prediction History{% endblock %}
+{% block content %}
+
+<h3 class="mb-4">Prediction History</h3>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Date</th>
+          <th>Predicted Status</th>
+          <th>Probability</th>
+          <th>Category</th>
+          <th>Model</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in predictions %}
+        <tr>
+          <td>{{ p.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>
+            {% if p.predicted_status == 'Placed' %}
+              <span class="badge bg-success">Placed</span>
+            {% else %}
+              <span class="badge bg-danger">Not Placed</span>
+            {% endif %}
+          </td>
+          <td>{{ p.probability_percentage }}%</td>
+          <td><span class="badge bg-{{ category_colors.get(p.category, 'secondary') }}">{{ p.category }}</span></td>
+          <td class="small text-muted">{{ p.model_version }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center text-muted py-4">No predictions yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

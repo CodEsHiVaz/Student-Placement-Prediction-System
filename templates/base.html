@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Placement Predictor{% endblock %}</title>
+
+  <!-- Bootstrap 5 (grid + components) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <!-- Fonts: Sora (headings) + Manrope (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+{% set authed = current_user.is_authenticated %}
+<body class="{{ 'app-shell' if authed else 'auth-shell' }}">
+
+{% if authed %}
+  {# ---------------- Sidebar navigation ---------------- #}
+  {% set is_admin = current_user.is_admin %}
+  {% if is_admin %}
+    {% set nav_items = [
+      ('admin.dashboard', 'bi-grid-1x2-fill', 'Dashboard', []),
+      ('admin.students', 'bi-people-fill', 'Students', ['admin.student_detail']),
+      ('admin.reports', 'bi-file-earmark-bar-graph-fill', 'Reports', ['admin.download_report']),
+    ] %}
+  {% else %}
+    {% set nav_items = [
+      ('student.dashboard', 'bi-grid-1x2-fill', 'Dashboard', []),
+      ('student.profile', 'bi-person-fill', 'Profile', []),
+      ('student.predict_page', 'bi-graph-up-arrow', 'Predict', []),
+      ('student.recommendations', 'bi-lightbulb-fill', 'Recommendations', []),
+      ('student.history', 'bi-clock-history', 'History', []),
+    ] %}
+  {% endif %}
+
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="{{ url_for('auth.index') }}">
+      <span class="brand-mark"><i class="bi bi-mortarboard-fill"></i></span>
+      <span class="brand-text">Placement<span class="brand-accent">AI</span></span>
+    </a>
+
+    <nav class="nav-list">
+      <p class="nav-caption">{{ 'Administration' if is_admin else 'Menu' }}</p>
+      {% for endpoint, icon, label, extra in nav_items %}
+        {% set active = request.endpoint == endpoint or request.endpoint in extra %}
+        <a class="nav-item {{ 'active' if active }}" href="{{ url_for(endpoint) }}">
+          <i class="bi {{ icon }}"></i>
+          <span>{{ label }}</span>
+        </a>
+      {% endfor %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <span class="avatar">{{ current_user.username[0]|upper }}</span>
+        <div class="user-meta">
+          <span class="user-name">{{ current_user.username }}</span>
+          <span class="user-role">{{ 'Admin' if is_admin else 'Student' }}</span>
+        </div>
+      </div>
+      <a href="{{ url_for('auth.logout') }}" class="logout-btn" title="Logout">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+    </div>
+  </aside>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+{% endif %}
+
+{# ---------------- Layout wrapper (single content block) ---------------- #}
+<div class="{{ 'app-main' if authed else 'auth-wrap' }}">
+
+  {% if authed %}
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu"><i class="bi bi-list"></i></button>
+    <span class="topbar-brand">Placement<span class="brand-accent">AI</span></span>
+    <div class="topbar-spacer"></div>
+    <span class="topbar-user d-none d-sm-inline">{{ current_user.username }}</span>
+    <span class="avatar avatar-sm">{{ current_user.username[0]|upper }}</span>
+  </header>
+  {% endif %}
+
+  <main class="{{ 'content' if authed else 'auth-panel' }}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

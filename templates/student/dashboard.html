@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+
+<h3 class="mb-4">Welcome, {{ current_user.username }}</h3>
+
+{% if not student %}
+  <div class="alert alert-info">
+    You haven't created your profile yet.
+    <a href="{{ url_for('student.profile') }}" class="alert-link">Complete your profile</a>
+    to run a placement prediction.
+  </div>
+{% else %}
+
+<div class="row g-4">
+  <!-- Prediction summary -->
+  <div class="col-md-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-body text-center">
+        <h6 class="text-muted">Placement Probability</h6>
+        {% if latest %}
+          {% set color = category_colors.get(latest.category, 'secondary') %}
+          <div class="prob-display text-{{ color }}">{{ latest.probability_percentage }}%</div>
+          <span class="badge bg-{{ color }} fs-6 mb-2">{{ latest.category }}</span>
+          <p class="mb-0">Predicted Status:
+            {% if latest.predicted_status == 'Placed' %}
+              <span class="badge bg-success fs-6">Placed</span>
+            {% else %}
+              <span class="badge bg-danger fs-6">Not Placed</span>
+            {% endif %}
+          </p>
+          <small class="text-muted d-block mt-2">
+            Last predicted: {{ latest.created_at.strftime('%Y-%m-%d %H:%M') }}
+          </small>
+        {% else %}
+          <p class="text-muted my-4">No prediction yet.</p>
+          <a href="{{ url_for('student.predict_page') }}" class="btn btn-primary">Predict Now</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Key metrics -->
+  <div class="col-md-8">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h6 class="text-muted mb-3">Your Key Metrics</h6>
+        <div class="row g-3">
+          {% set metrics = [
+            ('CGPA', student.cgpa),
+            ('Coding Skills', student.coding_skills),
+            ('Communication', student.communication_skills),
+            ('Aptitude Score', student.aptitude_test_score),
+            ('Internships', student.internships),
+            ('Projects', student.projects),
+            ('Certifications', student.certifications),
+            ('Backlogs', student.backlogs),
+          ] %}
+          {% for label, value in metrics %}
+          <div class="col-6 col-md-3">
+            <div class="metric-box border">
+              <div class="metric-value">{{ value if value is not none else '-' }}</div>
+              <div class="metric-label">{{ label }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="mt-3">
+          <a href="{{ url_for('student.predict_page') }}" class="btn btn-primary btn-sm">Run Prediction</a>
+          <a href="{{ url_for('student.recommendations') }}" class="btn btn-outline-primary btn-sm">Recommendations</a>
+          <a href="{{ url_for('student.profile') }}" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

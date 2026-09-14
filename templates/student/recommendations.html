@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Recommendations{% endblock %}
+{% block content %}
+
+<h3 class="mb-4">Recommendations</h3>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-success text-white">Your Strengths</div>
+      <ul class="list-group list-group-flush">
+        {% for item in recs.strengths %}
+          <li class="list-group-item"><i class="bi bi-check-circle text-success"></i> {{ item }}</li>
+        {% else %}
+          <li class="list-group-item text-muted">No strengths identified yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-warning">Areas to Improve</div>
+      <ul class="list-group list-group-flush">
+        {% for item in recs.areas_to_improve %}
+          <li class="list-group-item"><i class="bi bi-exclamation-triangle text-warning"></i> {{ item }}</li>
+        {% else %}
+          <li class="list-group-item text-muted">Great! No major weak areas found.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">Recommended Actions</div>
+      <ul class="list-group list-group-flush">
+        {% for item in recs.recommended_actions %}
+          <li class="list-group-item"><i class="bi bi-arrow-right-circle text-primary"></i> {{ item }}</li>
+        {% else %}
+          <li class="list-group-item text-muted">Keep up the good work!</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

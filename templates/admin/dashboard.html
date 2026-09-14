@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+
+<h3 class="mb-4">Admin Dashboard</h3>
+
+<!-- Summary cards -->
+<div class="row g-3 mb-4">
+  {% set cards = [
+    ('Total Students', stats.total_students, 'primary'),
+    ('Total Predictions', stats.total_predictions, 'secondary'),
+    ('Predicted Placed', stats.predicted_placed, 'success'),
+    ('Predicted Not Placed', stats.predicted_not_placed, 'danger'),
+    ('High', stats.high, 'success'),
+    ('Medium', stats.medium, 'warning'),
+    ('Low', stats.low, 'danger'),
+  ] %}
+  {% for label, value, color in cards %}
+  <div class="col-6 col-md-3">
+    <div class="card stat-card tone-{{ color }} shadow-sm">
+      <div class="card-body">
+        <div class="stat-value text-{{ color }}">{{ value }}</div>
+        <div class="stat-label">{{ label }}</div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% if metadata and metadata.get('best_metrics') %}
+<div class="alert alert-light border">
+  <strong>Latest model:</strong> {{ metadata.best_model }}
+  &middot; F1: {{ metadata.best_metrics.f1 }}
+  &middot; ROC-AUC: {{ metadata.best_metrics.roc_auc }}
+  &middot; Accuracy: {{ metadata.best_metrics.accuracy }}
+  <span class="text-muted">(trained {{ metadata.trained_at }})</span>
+</div>
+{% endif %}
+
+<!-- Charts -->
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm"><div class="card-body">
+      <h6 class="text-muted">Placed vs Not Placed</h6>
+      <canvas id="placedChart"></canvas>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm"><div class="card-body">
+      <h6 class="text-muted">Probability Categories</h6>
+      <canvas id="categoryChart"></canvas>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm"><div class="card-body">
+      <h6 class="text-muted">Branch-wise Student Distribution</h6>
+      <canvas id="branchChart"></canvas>
+    </div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm"><div class="card-body">
+      <h6 class="text-muted">CGPA vs Placement</h6>
+      <canvas id="cgpaChart"></canvas>
+    </div></div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadDashboard() {
+  const resp = await fetch("{{ url_for('prediction.api_dashboard_stats') }}");
+  const s = await resp.json();
+
+  new Chart(document.getElementById("placedChart"), {
+    type: "doughnut",
+    data: {
+      labels: ["Placed", "Not Placed"],
+      datasets: [{ data: [s.predicted_placed, s.predicted_not_placed],
+                   backgroundColor: ["#198754", "#dc3545"] }],
+    },
+  });
+
+  new Chart(document.getElementById("categoryChart"), {
+    type: "doughnut",
+    data: {
+      labels: ["High", "Medium", "Low"],
+      datasets: [{ data: [s.high, s.medium, s.low],
+                   backgroundColor: ["#198754", "#ffc107", "#dc3545"] }],
+    },
+  });
+
+  const branchLabels = Object.keys(s.branch_distribution);
+  new Chart(document.getElementById("branchChart"), {
+    type: "bar",
+    data: {
+      labels: branchLabels,
+      datasets: [{ label: "Students", data: branchLabels.map(b => s.branch_distribution[b]),
+                   backgroundColor: "#0d6efd" }],
+    },
+    options: { plugins: { legend: { display: false } } },
+  });
+
+  new Chart(document.getElementById("cgpaChart"), {
+    type: "bar",
+    data: {
+      labels: s.cgpa_vs_placement.labels,
+      datasets: [
+        { label: "Placed", data: s.cgpa_vs_placement.placed, backgroundColor: "#198754" },
+        { label: "Not Placed", data: s.cgpa_vs_placement.not_placed, backgroundColor: "#dc3545" },
+      ],
+    },
+  });
+}
+loadDashboard();
+</script>
+{% endblock %}
